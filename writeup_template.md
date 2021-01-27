@@ -27,9 +27,21 @@ You're reading it! Below I describe how I addressed each rubric point and where 
 ### Explain the Starter Code
 
 #### 1. Explain the functionality of what's provided in `motion_planning.py` and `planning_utils.py`
-These scripts contain a basic planning implementation that includes...
+The one main difference between the backyard_flyer and Motion Planning code is use of an auxilary support file planning_utils .This Planning_util offers tools for use in the Motion Planning code.Lets dive into the tools that planning util offers. 
 
-And here's a lovely image of my results (ok this image has nothing to do with it, but it's a nice example of how to include images in your writeup!)
+1. create_grid()-This function generates a grid map based on the information extracted from real world regarding free space and obstacle dimension including its height.The returned grid map is a 2D configuration space.  
+
+2. Action()-This is a class that define all possible motions(North,South,East,West) and their respective costs.It also contains property definitions which makes it easy to access this attributes.
+
+3. valid_actions()-This function given a grid and position within the grid checks feasbility of taking a particular action.
+
+4. a_star()-This function implements a* algorithm for finding minimum path to reach from path to goal.
+
+5. heuristics()-This function defines a heuristic which is the measured used by A* to find an optimal path.
+
+Apart from usage of above mentioned tools we also have a new state (Planning) added to our state machine.This state is set once global path planning is complete and takeoff transition is set and code proceeds as normal as seen in backyard flyer code. 
+
+For visualisation there is a send_waypoints function that sends waypoint to simulator.
 
 <!--
 ![Top Down View](./misc/high_up.png)
