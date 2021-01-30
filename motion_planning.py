@@ -2,7 +2,7 @@ import argparse
 import time
 import msgpack
 from enum import Enum, auto
-
+import csv
 import numpy as np
 
 from planning_utils import a_star, heuristic, create_grid
@@ -118,15 +118,21 @@ class MotionPlanning(Drone):
         SAFETY_DISTANCE = 5
 
         self.target_position[2] = TARGET_ALTITUDE
-
+        
         # TODO: read lat0, lon0 from colliders into floating point values
+        with open('colliders.csv', newline='') as f:
+                    reader = csv.reader(f)
+                    first_row = next(reader) 
+        lat0= float(first_row[0].split(" ")[1])
+        lon0= float(first_row[1].split(" ")[2])
         
         # TODO: set home position to (lon0, lat0, 0)
-
+        self.set_home_position(lon0,lat0,0)
         # TODO: retrieve current global position
- 
+        global_pos = self.global_position 
+        local_pos = []
         # TODO: convert to current local position using global_to_local()
-        
+        local_pos = global_to_local(global_pos,self.global_home)
         print('global home {0}, position {1}, local position {2}'.format(self.global_home, self.global_position,
                                                                          self.local_position))
         # Read in obstacle map
@@ -135,14 +141,18 @@ class MotionPlanning(Drone):
         # Define a grid for a particular altitude and safety margin around obstacles
         grid, north_offset, east_offset = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
         print("North offset = {0}, east offset = {1}".format(north_offset, east_offset))
+        print("grid size :{}".format(grid.shape))
         # Define starting point on the grid (this is just grid center)
         grid_start = (-north_offset, -east_offset)
         # TODO: convert start position to current position rather than map center
-        
+        grid_start = (int(np.ceil(local_pos[0]-north_offset)),int(np.ceil(local_pos[1]-east_offset)))
         # Set goal as some arbitrary position on the grid
-        grid_goal = (-north_offset + 10, -east_offset + 10)
+        grid_goal = (-north_offset +321, -east_offset + 75)
         # TODO: adapt to set goal as latitude / longitude position and convert
-
+        lat = 37.792945
+        lon = -122.397513
+        gol_pos = global_to_local([lon,lat,0],self.global_home)
+        #grid_goal = (int(np.ceil(-north_offset + gol_pos[0])),int(np.ceil(gol_pos[1] -east_offset)) )
         # Run A* to find a path from start to goal
         # TODO: add diagonal motions with a cost of sqrt(2) to your A* implementation
         # or move to a different search space such as a graph (not done here)
