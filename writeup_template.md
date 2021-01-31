@@ -56,41 +56,26 @@ Here's | A | Snappy | Table
 ### Implementing Your Path Planning Algorithm
 
 #### 1. Set your global home position
-Here students should read the first line of the csv file, extract lat0 and lon0 as floating point values and use the self.set_home_position() method to set global home. Explain briefly how you accomplished this in your code.
-
-
-And here is a lovely picture of our downtown San Francisco environment from above!
-![Map of SF](./misc/map.png)
+For the first task, I extracted lat lon from first line of collider.csv file.This is basically the centre point of the map. I used this co-ordinates to be assigned as global home using the udacidrone api set_home_position() 
 
 #### 2. Set your current local position
-Here as long as you successfully determine your local position relative to global home you'll be all set. Explain briefly how you accomplished this in your code.
-
-
-Meanwhile, here's a picture of me flying through the trees!
-![Forest Flying](./misc/in_the_trees.png)
+Next we want the path planning to start from your current position. This position should preferably be in NED co-ordinates.This current local position is acquired by passing self.global_position attribute to the gloabl_to_local() api of udacidrone.This gives the drones current location in local co-ordinates with respect to global home.
 
 #### 3. Set grid start position from local position
-This is another step in adding flexibility to the start location. As long as it works you're good to go!
+Here we use the local position acquired in previous step and adjust it using offset so it is sort of transformed to the grid reference frame.Then this is passed as start position to A* algorithms. 
 
 #### 4. Set grid goal position from geodetic coords
-This step is to add flexibility to the desired goal location. Should be able to choose any (lat, lon) within the map and have it rendered to a goal location on the grid.
+Here the hardcoded goal position is replaced by global_to_local() api which is fed with destination lat,lon acquired from user . check line 152.
+
+Note:- Not all lat , lon values results in successful path find . I would like your advice in properly selecting lat , lon as goal position. Despite experimentation have still not figured out . But for one goal , I found by chance which validates all of the code logic.
 
 #### 5. Modify A* to include diagonal motion (or replace A* altogether)
-Minimal requirement here is to modify the code in planning_utils() to update the A* implementation to include diagonal motions on the grid that have a cost of sqrt(2), but more creative solutions are welcome. Explain the code you used to accomplish this step.
+Here changes were made to Action enum class to add diagonal motion and the necessary checks were added to valid_actions. check line 54 and line 91.
 
 #### 6. Cull waypoints 
-For this step you can use a collinearity test or ray tracing method like Bresenham. The idea is simply to prune your path of unnecessary waypoints. Explain the code you used to accomplish this step.
+Here I used collinearity test to prune paths . But in future I hope to add voxcel based planning and bresenham based pruning algorithm.
 
 
 
-### Execute the flight
-#### 1. Does it work?
-It works!
-
-### Double check that you've met specifications for each of the [rubric](https://review.udacity.com/#!/rubrics/1534/view) points.
-  
-# Extra Challenges: Real World Planning
-
-For an extra challenge, consider implementing some of the techniques described in the "Real World Planning" lesson. You could try implementing a vehicle model to take dynamic constraints into account, or implement a replanning method to invoke if you get off course or encounter unexpected obstacles.
 
 
